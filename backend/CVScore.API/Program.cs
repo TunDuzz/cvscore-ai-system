@@ -28,6 +28,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await dbContext.Database.MigrateAsync();
+    await ApplicationDbSeeder.SeedAsync(dbContext);
+}
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
