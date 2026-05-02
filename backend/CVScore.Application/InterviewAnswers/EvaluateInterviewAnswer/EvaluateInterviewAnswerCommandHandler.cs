@@ -25,6 +25,7 @@ public class EvaluateInterviewAnswerCommandHandler(
                 x.InterviewQuestion.ExpectedAnswerPoints,
                 SessionStatus = x.InterviewQuestion.InterviewSession.Status,
                 TargetRole = x.InterviewQuestion.InterviewSession.InterviewProfile.TargetRole,
+                Language = x.InterviewQuestion.InterviewSession.InterviewProfile.Language,
                 TechStack = x.InterviewQuestion.InterviewSession.InterviewProfile.TechStack
             })
             .FirstOrDefaultAsync(cancellationToken);
@@ -43,6 +44,7 @@ public class EvaluateInterviewAnswerCommandHandler(
         var evaluation = await answerEvaluator.EvaluateAsync(
             new InterviewAnswerEvaluationRequest(
                 answerData.TargetRole,
+                answerData.Language,
                 answerData.TechStack,
                 answerData.QuestionContent,
                 answerData.ExpectedAnswerPoints,

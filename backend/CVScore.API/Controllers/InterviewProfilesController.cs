@@ -17,6 +17,7 @@ public class InterviewProfilesController(ISender sender) : ApiControllerBase
             request.CvDocumentId,
             request.TargetRole,
             request.TargetLevel,
+            request.Language,
             request.CompanyName,
             request.JobDescription,
             request.TechStack,

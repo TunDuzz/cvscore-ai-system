@@ -31,6 +31,7 @@ public class CreateInterviewProfileCommandHandler(IApplicationDbContext context)
             CvDocumentId = request.CvDocumentId,
             TargetRole = request.TargetRole.Trim(),
             TargetLevel = request.TargetLevel,
+            Language = request.Language,
             CompanyName = request.CompanyName?.Trim(),
             JobDescription = request.JobDescription?.Trim(),
             TechStack = request.TechStack?.Trim(),

@@ -27,12 +27,14 @@ public class GeminiInterviewAnswerEvaluator(
             $"""
             Evaluate this interview answer for a {request.TargetRole} role.
 
+            Interview language: {request.Language}
             Tech stack: {request.TechStack ?? "N/A"}
             Question: {request.QuestionContent}
             Expected answer points: {request.ExpectedAnswerPoints ?? "N/A"}
             Candidate answer: {request.AnswerContent}
 
             Return JSON only. Score must be from 0 to 100.
+            strengths, improvements, suggestedAnswer, and detailedAnalysis must be written in the requested interview language.
             """;
 
         var schema = new JsonObject

@@ -9,6 +9,7 @@ public sealed record CreateInterviewProfileCommand(
     Guid CvDocumentId,
     string TargetRole,
     InterviewLevel TargetLevel,
+    InterviewLanguage Language,
     string? CompanyName,
     string? JobDescription,
     string? TechStack,

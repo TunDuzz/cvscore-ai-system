@@ -58,6 +58,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.TargetRole).HasMaxLength(150).IsRequired();
             entity.Property(e => e.CompanyName).HasMaxLength(150);
+            entity.Property(e => e.Language).HasConversion<int>();
 
             entity.HasOne(e => e.User)
                 .WithMany(u => u.InterviewProfiles)

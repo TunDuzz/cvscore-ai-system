@@ -21,6 +21,7 @@ public class GenerateInterviewQuestionsQueryHandler(
             {
                 x.TargetRole,
                 x.TargetLevel,
+                x.Language,
                 x.CompanyName,
                 x.JobDescription,
                 x.TechStack,
@@ -39,6 +40,7 @@ public class GenerateInterviewQuestionsQueryHandler(
             new InterviewQuestionGenerationRequest(
                 profile.TargetRole,
                 profile.TargetLevel,
+                profile.Language,
                 profile.CompanyName,
                 profile.JobDescription,
                 profile.TechStack,

@@ -1,4 +1,5 @@
 using CVScore.Application.Abstractions.AI;
+using CVScore.Domain.Enums;
 
 namespace CVScore.Infrastructure.AI;
 
@@ -15,6 +16,7 @@ public class MockInterviewAnswerEvaluator : IInterviewAnswerEvaluator
                             request.AnswerContent.Contains(
                                 request.TechStack.Split(',')[0].Trim(),
                                 StringComparison.OrdinalIgnoreCase);
+        var isVietnamese = request.Language == InterviewLanguage.Vietnamese;
 
         var score = 55m;
         if (answerLength >= 40) score += 15m;
@@ -23,22 +25,35 @@ public class MockInterviewAnswerEvaluator : IInterviewAnswerEvaluator
         if (mentionsStack) score += 10m;
         if (score > 100m) score = 100m;
 
-        var strengths = hasStructure
-            ? "The answer has a clear structure and shows some reasoning behind the decision."
-            : "The answer is concise and stays on the topic of the interview question.";
+        var strengths = isVietnamese
+            ? hasStructure
+                ? "Câu trả lời có cấu trúc rõ ràng và thể hiện được phần nào lý do phía sau quyết định kỹ thuật."
+                : "Câu trả lời khá ngắn gọn và vẫn bám đúng trọng tâm của câu hỏi phỏng vấn."
+            : hasStructure
+                ? "The answer has a clear structure and shows some reasoning behind the decision."
+                : "The answer is concise and stays on the topic of the interview question.";
 
-        var improvements = answerLength < 40
-            ? "Add more depth, concrete examples, and clearer technical tradeoffs."
-            : "Make the answer more specific with measurable outcomes and implementation details.";
+        var improvements = isVietnamese
+            ? answerLength < 40
+                ? "Nên bổ sung chiều sâu, ví dụ cụ thể và nêu rõ hơn các trade-off kỹ thuật."
+                : "Nên làm câu trả lời cụ thể hơn bằng kết quả đo lường được và chi tiết triển khai."
+            : answerLength < 40
+                ? "Add more depth, concrete examples, and clearer technical tradeoffs."
+                : "Make the answer more specific with measurable outcomes and implementation details.";
 
-        var suggestedAnswer =
-            $"For a {request.TargetRole} role, a stronger answer should explain the context, technical decision, tradeoffs, and outcome. " +
-            $"It should directly address the question '{request.QuestionContent}' and connect the answer to relevant tools or practices.";
+        var suggestedAnswer = isVietnamese
+            ? $"Với vị trí {request.TargetRole}, một câu trả lời tốt hơn nên giải thích bối cảnh, quyết định kỹ thuật, trade-off và kết quả cuối cùng. " +
+              $"Câu trả lời cũng nên bám sát câu hỏi '{request.QuestionContent}' và liên hệ tới công cụ hoặc thực hành phù hợp."
+            : $"For a {request.TargetRole} role, a stronger answer should explain the context, technical decision, tradeoffs, and outcome. " +
+              $"It should directly address the question '{request.QuestionContent}' and connect the answer to relevant tools or practices.";
 
-        var detailedAnalysis =
-            $"Expected focus: {request.ExpectedAnswerPoints ?? "Clear reasoning, relevance, and practical experience"}. " +
-            $"Observed answer length: {answerLength} words. " +
-            $"The mock evaluator used structure, specificity, and relevance signals to produce this score.";
+        var detailedAnalysis = isVietnamese
+            ? $"Trọng tâm kỳ vọng: {request.ExpectedAnswerPoints ?? "Lập luận rõ ràng, tính liên quan và kinh nghiệm thực tế"}. " +
+              $"Độ dài câu trả lời quan sát được: {answerLength} từ. " +
+              $"Mock evaluator dùng tín hiệu về cấu trúc, độ cụ thể và mức độ liên quan để đưa ra điểm số này."
+            : $"Expected focus: {request.ExpectedAnswerPoints ?? "Clear reasoning, relevance, and practical experience"}. " +
+              $"Observed answer length: {answerLength} words. " +
+              $"The mock evaluator used structure, specificity, and relevance signals to produce this score.";
 
         return Task.FromResult(new InterviewAnswerEvaluationResult(
             score,

@@ -9,6 +9,7 @@ public interface IInterviewAnswerEvaluator
 
 public sealed record InterviewAnswerEvaluationRequest(
     string TargetRole,
+    CVScore.Domain.Enums.InterviewLanguage Language,
     string? TechStack,
     string QuestionContent,
     string? ExpectedAnswerPoints,

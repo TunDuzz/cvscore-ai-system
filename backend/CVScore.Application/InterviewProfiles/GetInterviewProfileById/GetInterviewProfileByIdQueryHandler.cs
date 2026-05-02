@@ -20,6 +20,7 @@ public class GetInterviewProfileByIdQueryHandler(IApplicationDbContext context)
                 x.CvDocumentId,
                 x.TargetRole,
                 x.TargetLevel,
+                x.Language,
                 x.CompanyName,
                 x.JobDescription,
                 x.TechStack,

@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CVScore.Infrastructure", "C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CVScore.API", "CVScore.API\CVScore.API.csproj", "{1C8B94EB-BCE1-4F99-A0E2-435EAC590DE0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CVScore.Infrastructure.Tests", "CVScore.Infrastructure.Tests\CVScore.Infrastructure.Tests.csproj", "{724C90DA-DB24-4A6B-9756-B09A47D6944B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,18 @@ Global
 		{1C8B94EB-BCE1-4F99-A0E2-435EAC590DE0}.Release|x64.Build.0 = Release|Any CPU
 		{1C8B94EB-BCE1-4F99-A0E2-435EAC590DE0}.Release|x86.ActiveCfg = Release|Any CPU
 		{1C8B94EB-BCE1-4F99-A0E2-435EAC590DE0}.Release|x86.Build.0 = Release|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Debug|x64.Build.0 = Debug|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Debug|x86.Build.0 = Debug|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Release|x64.ActiveCfg = Release|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Release|x64.Build.0 = Release|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Release|x86.ActiveCfg = Release|Any CPU
+		{724C90DA-DB24-4A6B-9756-B09A47D6944B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

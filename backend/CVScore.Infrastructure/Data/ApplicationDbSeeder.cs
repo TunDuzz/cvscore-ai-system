@@ -6,6 +6,13 @@ namespace CVScore.Infrastructure.Data;
 
 public static class ApplicationDbSeeder
 {
+    private static readonly Guid DemoUserId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    private static readonly Guid DemoCvDocumentId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+    private static readonly Guid DemoInterviewProfileId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+    private static readonly Guid DemoInterviewSessionId = Guid.Parse("44444444-4444-4444-4444-444444444444");
+    private static readonly Guid DemoQuestionOneId = Guid.Parse("55555555-5555-5555-5555-555555555555");
+    private static readonly Guid DemoQuestionTwoId = Guid.Parse("66666666-6666-6666-6666-666666666666");
+
     public static async Task SeedAsync(ApplicationDbContext context, CancellationToken cancellationToken = default)
     {
         if (await context.Users.AnyAsync(cancellationToken))
@@ -15,6 +22,7 @@ public static class ApplicationDbSeeder
 
         var user = new User
         {
+            Id = DemoUserId,
             FullName = "Demo Candidate",
             Email = "demo@cvscore.local",
             PasswordHash = "seed-password-hash",
@@ -23,6 +31,7 @@ public static class ApplicationDbSeeder
 
         var cv = new CvDocument
         {
+            Id = DemoCvDocumentId,
             User = user,
             Title = "Backend Developer CV",
             FileName = "backend-developer-cv.pdf",
@@ -36,10 +45,12 @@ public static class ApplicationDbSeeder
 
         var profile = new InterviewProfile
         {
+            Id = DemoInterviewProfileId,
             User = user,
             CvDocument = cv,
             TargetRole = "Backend Developer",
             TargetLevel = InterviewLevel.Mid,
+            Language = InterviewLanguage.English,
             CompanyName = "CVScore",
             JobDescription = "Build scalable APIs and AI-driven interview features.",
             TechStack = ".NET, EF Core, MySQL, React",
@@ -48,6 +59,7 @@ public static class ApplicationDbSeeder
 
         var session = new InterviewSession
         {
+            Id = DemoInterviewSessionId,
             InterviewProfile = profile,
             Status = InterviewSessionStatus.InProgress,
             StartedAt = DateTime.UtcNow,
@@ -55,6 +67,7 @@ public static class ApplicationDbSeeder
             [
                 new InterviewQuestion
                 {
+                    Id = DemoQuestionOneId,
                     DisplayOrder = 1,
                     Category = QuestionCategory.Introduction,
                     Difficulty = QuestionDifficulty.Easy,
@@ -63,6 +76,7 @@ public static class ApplicationDbSeeder
                 },
                 new InterviewQuestion
                 {
+                    Id = DemoQuestionTwoId,
                     DisplayOrder = 2,
                     Category = QuestionCategory.Technical,
                     Difficulty = QuestionDifficulty.Medium,

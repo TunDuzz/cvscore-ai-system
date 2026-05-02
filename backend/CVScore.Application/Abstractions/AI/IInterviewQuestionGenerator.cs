@@ -12,6 +12,7 @@ public interface IInterviewQuestionGenerator
 public sealed record InterviewQuestionGenerationRequest(
     string TargetRole,
     InterviewLevel TargetLevel,
+    InterviewLanguage Language,
     string? CompanyName,
     string? JobDescription,
     string? TechStack,

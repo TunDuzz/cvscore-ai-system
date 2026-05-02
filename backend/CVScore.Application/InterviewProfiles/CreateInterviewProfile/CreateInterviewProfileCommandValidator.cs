@@ -9,6 +9,7 @@ public class CreateInterviewProfileCommandValidator : AbstractValidator<CreateIn
         RuleFor(x => x.UserId).NotEmpty();
         RuleFor(x => x.CvDocumentId).NotEmpty();
         RuleFor(x => x.TargetRole).NotEmpty().MaximumLength(150);
+        RuleFor(x => x.Language).IsInEnum();
         RuleFor(x => x.CompanyName).MaximumLength(150);
         RuleFor(x => x.JobDescription).MaximumLength(4000);
         RuleFor(x => x.TechStack).MaximumLength(1000);

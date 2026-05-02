@@ -12,6 +12,7 @@ public sealed record InterviewProfileDetailDto(
     Guid CvDocumentId,
     string TargetRole,
     InterviewLevel TargetLevel,
+    InterviewLanguage Language,
     string? CompanyName,
     string? JobDescription,
     string? TechStack,

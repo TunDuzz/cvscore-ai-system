@@ -30,6 +30,7 @@ public class GeminiInterviewQuestionGenerator(
 
             Target role: {request.TargetRole}
             Target level: {request.TargetLevel}
+            Interview language: {request.Language}
             Company: {request.CompanyName ?? "N/A"}
             Job description: {request.JobDescription ?? "N/A"}
             Tech stack: {request.TechStack ?? "N/A"}
@@ -37,6 +38,7 @@ public class GeminiInterviewQuestionGenerator(
             CV summary: {request.CvSummary ?? "N/A"}
 
             Return concise, practical interview questions in JSON only.
+            The question content, expectedAnswerPoints, and aiRationale must be written in the requested interview language.
             """;
 
         var schema = new JsonObject

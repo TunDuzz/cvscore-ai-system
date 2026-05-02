@@ -1,0 +1,211 @@
+{
+  "info": {
+    "_postman_id": "4c8d18ab-0b43-45ad-b0b7-8c7b38fcb8fd",
+    "name": "CVScore API",
+    "description": "Quick backend verification flow for CVScore interview APIs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5185" },
+    { "key": "userId", "value": "11111111-1111-1111-1111-111111111111" },
+    { "key": "cvDocumentId", "value": "22222222-2222-2222-2222-222222222222" },
+    { "key": "interviewProfileId", "value": "" },
+    { "key": "interviewSessionId", "value": "" },
+    { "key": "interviewQuestionId", "value": "" },
+    { "key": "interviewAnswerId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "1. Get Seed CV Documents",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/cv-documents/user/{{userId}}",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "cv-documents", "user", "{{userId}}" ]
+        }
+      }
+    },
+    {
+      "name": "2. Create Interview Profile",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.success && json.data && json.data.id) {",
+              "  pm.collectionVariables.set('interviewProfileId', json.data.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"cvDocumentId\": \"{{cvDocumentId}}\",\n  \"targetRole\": \"Backend Developer\",\n  \"targetLevel\": 4,\n  \"language\": 2,\n  \"companyName\": \"CVScore\",\n  \"jobDescription\": \"Build scalable APIs and AI-driven interview features.\",\n  \"techStack\": \".NET, EF Core, MySQL, React\",\n  \"focusAreas\": \"Clean Architecture, performance, testing\",\n  \"notes\": \"Postman verification flow\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/interview-profiles",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "interview-profiles" ]
+        }
+      }
+    },
+    {
+      "name": "3. Get Interview Profile By Id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/interview-profiles/{{interviewProfileId}}",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "interview-profiles", "{{interviewProfileId}}" ]
+        }
+      }
+    },
+    {
+      "name": "4. Generate Interview Questions",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/interview-question-generation/profiles/{{interviewProfileId}}?questionCount=5",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "interview-question-generation", "profiles", "{{interviewProfileId}}" ],
+          "query": [
+            { "key": "questionCount", "value": "5" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "5. Start Interview Session",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.success && json.data && json.data.id) {",
+              "  pm.collectionVariables.set('interviewSessionId', json.data.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"interviewProfileId\": \"{{interviewProfileId}}\",\n  \"questions\": [\n    {\n      \"displayOrder\": 1,\n      \"category\": 1,\n      \"difficulty\": 1,\n      \"content\": \"Introduce yourself and explain your backend experience.\",\n      \"expectedAnswerPoints\": \"Career summary, backend stack, impact\",\n      \"aiRationale\": \"Warm-up question\"\n    },\n    {\n      \"displayOrder\": 2,\n      \"category\": 3,\n      \"difficulty\": 2,\n      \"content\": \"How would you design a CQRS workflow in .NET?\",\n      \"expectedAnswerPoints\": \"Separation of command/query, validation, persistence\",\n      \"aiRationale\": \"Core system design question\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/interview-sessions",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "interview-sessions" ]
+        }
+      }
+    },
+    {
+      "name": "6. Get Interview Session Detail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "const questions = json?.data?.questions || [];",
+              "if (questions.length > 0 && questions[0].id) {",
+              "  pm.collectionVariables.set('interviewQuestionId', questions[0].id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/interview-sessions/{{interviewSessionId}}",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "interview-sessions", "{{interviewSessionId}}" ]
+        }
+      }
+    },
+    {
+      "name": "7. Submit Interview Answer",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.success && json.data && json.data.id) {",
+              "  pm.collectionVariables.set('interviewAnswerId', json.data.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"interviewQuestionId\": \"{{interviewQuestionId}}\",\n  \"content\": \"I would separate commands and queries, validate commands through a MediatR pipeline, persist state changes through an application abstraction, and keep read models optimized for retrieval. This keeps the interview workflow maintainable and scalable.\",\n  \"audioUrl\": null,\n  \"durationInSeconds\": 95\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/interview-sessions/answers",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "interview-sessions", "answers" ]
+        }
+      }
+    },
+    {
+      "name": "8. Evaluate Interview Answer",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/interview-sessions/answers/{{interviewAnswerId}}/evaluate",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "interview-sessions", "answers", "{{interviewAnswerId}}", "evaluate" ]
+        }
+      }
+    },
+    {
+      "name": "9. Complete Interview Session",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"overallScore\": 84,\n  \"summary\": \"Strong first-pass backend interview session with clear CQRS reasoning.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/interview-sessions/{{interviewSessionId}}/complete",
+          "host": [ "{{baseUrl}}" ],
+          "path": [ "api", "interview-sessions", "{{interviewSessionId}}", "complete" ]
+        }
+      }
+    }
+  ]
+}
