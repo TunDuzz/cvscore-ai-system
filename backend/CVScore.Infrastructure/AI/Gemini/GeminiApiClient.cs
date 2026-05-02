@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using CVScore.Infrastructure.AI.Configuration;
+using CVScore.Infrastructure.AI.Exceptions;
 using Microsoft.Extensions.Options;
 
 namespace CVScore.Infrastructure.AI.Gemini;
@@ -18,7 +19,7 @@ public class GeminiApiClient(HttpClient httpClient, IOptions<AiOptions> aiOption
         var options = aiOptions.Value.Gemini;
         if (string.IsNullOrWhiteSpace(options.ApiKey))
         {
-            throw new InvalidOperationException("Gemini API key is not configured.");
+            throw new AiProviderException("Gemini API key is not configured.");
         }
 
         var request = new GeminiGenerateContentRequest
@@ -50,31 +51,42 @@ public class GeminiApiClient(HttpClient httpClient, IOptions<AiOptions> aiOption
         httpRequest.Headers.Add("x-goog-api-key", options.ApiKey);
         httpRequest.Content = JsonContent.Create(request, options: SerializerOptions);
 
-        using var response = await httpClient.SendAsync(httpRequest, cancellationToken);
-        var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
+        try
         {
-            throw new InvalidOperationException(
-                $"Gemini API request failed with status {(int)response.StatusCode}: {responseContent}");
+            using var response = await httpClient.SendAsync(httpRequest, cancellationToken);
+            var responseContent = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new AiProviderException(
+                    $"Gemini API request failed with status {(int)response.StatusCode}: {responseContent}");
+            }
+
+            var payload = JsonSerializer.Deserialize<GeminiGenerateContentResponse>(responseContent, SerializerOptions)
+                ?? throw new AiProviderException("Gemini API returned an empty response.");
+
+            var text = payload.Candidates?
+                .FirstOrDefault()?
+                .Content?
+                .Parts?
+                .FirstOrDefault()?
+                .Text;
+
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                throw new AiProviderException("Gemini API returned no structured text content.");
+            }
+
+            return text;
         }
-
-        var payload = JsonSerializer.Deserialize<GeminiGenerateContentResponse>(responseContent, SerializerOptions)
-            ?? throw new InvalidOperationException("Gemini API returned an empty response.");
-
-        var text = payload.Candidates?
-            .FirstOrDefault()?
-            .Content?
-            .Parts?
-            .FirstOrDefault()?
-            .Text;
-
-        if (string.IsNullOrWhiteSpace(text))
+        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
         {
-            throw new InvalidOperationException("Gemini API returned no structured text content.");
+            throw new AiProviderException("Gemini API request timed out.", ex);
         }
-
-        return text;
+        catch (HttpRequestException ex)
+        {
+            throw new AiProviderException("Gemini API request failed due to a network error.", ex);
+        }
     }
 
     private sealed class GeminiGenerateContentRequest

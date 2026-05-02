@@ -24,6 +24,7 @@ public static class AiServiceCollectionExtensions
                 {
                     var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<AiOptions>>().Value.Gemini;
                     client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/'));
+                    client.Timeout = TimeSpan.FromSeconds(options.TimeoutSeconds);
                 });
                 services.AddScoped<IInterviewQuestionGenerator, GeminiInterviewQuestionGenerator>();
                 services.AddScoped<IInterviewAnswerEvaluator, GeminiInterviewAnswerEvaluator>();

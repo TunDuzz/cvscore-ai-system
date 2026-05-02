@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using CVScore.API.Contracts.Common;
+using CVScore.Infrastructure.AI.Exceptions;
 using FluentValidation;
 
 namespace CVScore.API.Middlewares;
@@ -27,6 +28,20 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
                     Error = x.ErrorMessage
                 }));
 
+            response.Error!.TraceId = context.TraceIdentifier;
+
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+        }
+        catch (AiProviderException ex)
+        {
+            logger.LogWarning(ex, "AI provider request failed.");
+
+            context.Response.StatusCode = ex.Message.Contains("timed out", StringComparison.OrdinalIgnoreCase)
+                ? (int)HttpStatusCode.GatewayTimeout
+                : (int)HttpStatusCode.BadGateway;
+            context.Response.ContentType = "application/json";
+
+            var response = ApiResponse.Fail("ai_provider_error", ex.Message);
             response.Error!.TraceId = context.TraceIdentifier;
 
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));
