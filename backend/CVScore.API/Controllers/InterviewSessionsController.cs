@@ -70,17 +70,9 @@ public class InterviewSessionsController(ISender sender) : ApiControllerBase
     [HttpPost("answers/{id:guid}/evaluate")]
     public async Task<IActionResult> EvaluateAnswer(
         Guid id,
-        EvaluateInterviewAnswerRequest request,
         CancellationToken cancellationToken)
     {
-        var command = new EvaluateInterviewAnswerCommand(
-            id,
-            request.Score,
-            request.Strengths,
-            request.Improvements,
-            request.SuggestedAnswer,
-            request.DetailedAnalysis);
-
+        var command = new EvaluateInterviewAnswerCommand(id);
         var result = await sender.Send(command, cancellationToken);
         return FromResult(result, id => new { id });
     }

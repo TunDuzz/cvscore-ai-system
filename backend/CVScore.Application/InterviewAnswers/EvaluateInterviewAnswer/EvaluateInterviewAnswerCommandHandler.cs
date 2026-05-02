@@ -1,3 +1,4 @@
+using CVScore.Application.Abstractions.AI;
 using CVScore.Application.Abstractions.Persistence;
 using CVScore.Application.Common;
 using CVScore.Domain.Entities;
@@ -7,7 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CVScore.Application.InterviewAnswers.EvaluateInterviewAnswer;
 
-public class EvaluateInterviewAnswerCommandHandler(IApplicationDbContext context)
+public class EvaluateInterviewAnswerCommandHandler(
+    IApplicationDbContext context,
+    IInterviewAnswerEvaluator answerEvaluator)
     : IRequestHandler<EvaluateInterviewAnswerCommand, Result<Guid>>
 {
     public async Task<Result<Guid>> Handle(EvaluateInterviewAnswerCommand request, CancellationToken cancellationToken)
@@ -17,7 +20,12 @@ public class EvaluateInterviewAnswerCommandHandler(IApplicationDbContext context
             .Select(x => new
             {
                 x.Id,
-                SessionStatus = x.InterviewQuestion.InterviewSession.Status
+                x.Content,
+                QuestionContent = x.InterviewQuestion.Content,
+                x.InterviewQuestion.ExpectedAnswerPoints,
+                SessionStatus = x.InterviewQuestion.InterviewSession.Status,
+                TargetRole = x.InterviewQuestion.InterviewSession.InterviewProfile.TargetRole,
+                TechStack = x.InterviewQuestion.InterviewSession.InterviewProfile.TechStack
             })
             .FirstOrDefaultAsync(cancellationToken);
 
@@ -32,6 +40,15 @@ public class EvaluateInterviewAnswerCommandHandler(IApplicationDbContext context
             return Result<Guid>.Failure("Feedback can only be created for in-progress or completed sessions.");
         }
 
+        var evaluation = await answerEvaluator.EvaluateAsync(
+            new InterviewAnswerEvaluationRequest(
+                answerData.TargetRole,
+                answerData.TechStack,
+                answerData.QuestionContent,
+                answerData.ExpectedAnswerPoints,
+                answerData.Content),
+            cancellationToken);
+
         var feedback = await context.Feedbacks
             .FirstOrDefaultAsync(x => x.InterviewAnswerId == request.InterviewAnswerId, cancellationToken);
 
@@ -45,11 +62,11 @@ public class EvaluateInterviewAnswerCommandHandler(IApplicationDbContext context
             await context.AddAsync(feedback, cancellationToken);
         }
 
-        feedback.Score = request.Score;
-        feedback.Strengths = request.Strengths?.Trim();
-        feedback.Improvements = request.Improvements?.Trim();
-        feedback.SuggestedAnswer = request.SuggestedAnswer?.Trim();
-        feedback.DetailedAnalysis = request.DetailedAnalysis?.Trim();
+        feedback.Score = evaluation.Score;
+        feedback.Strengths = evaluation.Strengths?.Trim();
+        feedback.Improvements = evaluation.Improvements?.Trim();
+        feedback.SuggestedAnswer = evaluation.SuggestedAnswer?.Trim();
+        feedback.DetailedAnalysis = evaluation.DetailedAnalysis?.Trim();
         feedback.EvaluatedAt = DateTime.UtcNow;
         feedback.UpdatedAt = DateTime.UtcNow;
 

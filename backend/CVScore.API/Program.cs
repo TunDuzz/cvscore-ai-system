@@ -1,9 +1,10 @@
 using CVScore.API.Extensions;
 using Microsoft.EntityFrameworkCore;
-using CVScore.Infrastructure.Data;
 using CVScore.Application;
 using CVScore.Application.Abstractions.Persistence;
 using CVScore.Application.Common.Behaviors;
+using CVScore.Infrastructure.Data;
+using CVScore.Infrastructure.Extensions;
 using FluentValidation;
 using MediatR;
 
@@ -21,6 +22,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 builder.Services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
+builder.Services.AddAiServices(builder.Configuration);
 
 // Configure MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CVScore.Application.AssemblyReference).Assembly));

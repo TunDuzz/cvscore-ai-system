@@ -3,10 +3,4 @@ using MediatR;
 
 namespace CVScore.Application.InterviewAnswers.EvaluateInterviewAnswer;
 
-public sealed record EvaluateInterviewAnswerCommand(
-    Guid InterviewAnswerId,
-    decimal Score,
-    string? Strengths,
-    string? Improvements,
-    string? SuggestedAnswer,
-    string? DetailedAnalysis) : IRequest<Result<Guid>>;
+public sealed record EvaluateInterviewAnswerCommand(Guid InterviewAnswerId) : IRequest<Result<Guid>>;
