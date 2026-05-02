@@ -1,7 +1,11 @@
+using CVScore.API.Extensions;
 using Microsoft.EntityFrameworkCore;
 using CVScore.Infrastructure.Data;
 using CVScore.Application;
 using CVScore.Application.Abstractions.Persistence;
+using CVScore.Application.Common.Behaviors;
+using FluentValidation;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddValidatorsFromAssembly(typeof(CVScore.Application.AssemblyReference).Assembly);
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 // Configure MySQL
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -35,6 +41,7 @@ using (var scope = app.Services.CreateScope())
     await ApplicationDbSeeder.SeedAsync(dbContext);
 }
 
+app.UseGlobalExceptionHandling();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

@@ -6,9 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CVScore.API.Controllers;
 
-[ApiController]
 [Route("api/interview-profiles")]
-public class InterviewProfilesController(ISender sender) : ControllerBase
+public class InterviewProfilesController(ISender sender) : ApiControllerBase
 {
     [HttpPost]
     public async Task<IActionResult> Create(CreateInterviewProfileRequest request, CancellationToken cancellationToken)
@@ -25,15 +24,13 @@ public class InterviewProfilesController(ISender sender) : ControllerBase
             request.Notes);
 
         var result = await sender.Send(command, cancellationToken);
-        return result.IsSuccess
-            ? CreatedAtAction(nameof(GetById), new { id = result.Value }, new { id = result.Value })
-            : BadRequest(result.Error);
+        return FromResult(result, id => new { id }, StatusCodes.Status201Created);
     }
 
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await sender.Send(new GetInterviewProfileByIdQuery(id), cancellationToken);
-        return result.IsSuccess ? Ok(result.Value) : NotFound(result.Error);
+        return FromNullableResult(result);
     }
 }
