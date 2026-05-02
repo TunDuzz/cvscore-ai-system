@@ -4,6 +4,7 @@ using CVScore.Infrastructure.AI.Configuration;
 using CVScore.Infrastructure.AI.Gemini;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CVScore.Infrastructure.Extensions;
 
@@ -19,6 +20,11 @@ public static class AiServiceCollectionExtensions
         switch (provider)
         {
             case "gemini":
+                services.AddHttpClient<IGeminiApiClient, GeminiApiClient>((sp, client) =>
+                {
+                    var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<AiOptions>>().Value.Gemini;
+                    client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/'));
+                });
                 services.AddScoped<IInterviewQuestionGenerator, GeminiInterviewQuestionGenerator>();
                 services.AddScoped<IInterviewAnswerEvaluator, GeminiInterviewAnswerEvaluator>();
                 break;
