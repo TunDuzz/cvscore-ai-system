@@ -15,6 +15,18 @@ public static class ApplicationDbSeeder
 
     public static async Task SeedAsync(ApplicationDbContext context, CancellationToken cancellationToken = default)
     {
+        var demoPasswordHash = BCrypt.Net.BCrypt.HashPassword("Password@123");
+        var existingDemoUser = await context.Users
+            .FirstOrDefaultAsync(x => x.Email == "demo@cvscore.local", cancellationToken);
+
+        if (existingDemoUser is not null)
+        {
+            existingDemoUser.PasswordHash = demoPasswordHash;
+            existingDemoUser.UpdatedAt = DateTime.UtcNow;
+            await context.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
         if (await context.Users.AnyAsync(cancellationToken))
         {
             return;
@@ -25,7 +37,7 @@ public static class ApplicationDbSeeder
             Id = DemoUserId,
             FullName = "Demo Candidate",
             Email = "demo@cvscore.local",
-            PasswordHash = "seed-password-hash",
+            PasswordHash = demoPasswordHash,
             AvatarUrl = "https://example.com/avatar.png"
         };
 

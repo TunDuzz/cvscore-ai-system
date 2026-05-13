@@ -16,6 +16,8 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
         }
         catch (ValidationException ex)
         {
+            logger.LogWarning("Validation failed: {Errors}", string.Join(", ", ex.Errors.Select(e => $"{e.PropertyName}: {e.ErrorMessage}")));
+
             context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             context.Response.ContentType = "application/json";
 
@@ -30,7 +32,8 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
 
             response.Error!.TraceId = context.TraceIdentifier;
 
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response, jsonOptions));
         }
         catch (AiProviderException ex)
         {
@@ -44,7 +47,8 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
             var response = ApiResponse.Fail("ai_provider_error", ex.Message);
             response.Error!.TraceId = context.TraceIdentifier;
 
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response, jsonOptions));
         }
         catch (Exception ex)
         {
@@ -56,7 +60,8 @@ public class GlobalExceptionMiddleware(RequestDelegate next, ILogger<GlobalExcep
             var response = ApiResponse.Fail("internal_server_error", "An unexpected error occurred.");
             response.Error!.TraceId = context.TraceIdentifier;
 
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
+            var jsonOptions = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            await context.Response.WriteAsync(JsonSerializer.Serialize(response, jsonOptions));
         }
     }
 }
