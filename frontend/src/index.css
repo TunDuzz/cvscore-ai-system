@@ -1,26 +1,43 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@theme {
+  --color-apple-blue: #0071e3;
+  --color-apple-gray: #f5f5f7;
+  --color-apple-dark: #1d1d1f;
+  --color-apple-silver: #86868b;
+  
+  --radius-apple: 20px;
+  --radius-apple-sm: 12px;
+  
+  --animate-fade-in-up: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  @keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+@layer base {
+  body {
+    @apply bg-white text-apple-dark antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+}
+
+@layer components {
+  .auth-card {
+    @apply bg-white p-10 rounded-apple shadow-[0_20px_40px_rgba(0,0,0,0.08)] w-full max-w-[400px] border border-gray-100;
+  }
+
+  .apple-input {
+    @apply w-full px-4 py-3 bg-apple-gray rounded-apple-sm border border-transparent focus:border-apple-blue focus:bg-white outline-none transition-all duration-300 text-[17px];
+  }
+
+  .apple-button {
+    @apply w-full py-3 bg-apple-blue text-white rounded-apple-sm font-semibold hover:bg-apple-blue/90 active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-[17px];
+  }
+
+  .apple-link {
+    @apply text-apple-blue hover:underline transition-all duration-300 text-[15px];
+  }
 }
