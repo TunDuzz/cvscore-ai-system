@@ -18,22 +18,22 @@ const RegisterPage: React.FC = () => {
 
     try {
       await register({ fullName, email, password });
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Dang ky that bai.');
+      setError(err instanceof Error ? err.message : 'Đăng ký thất bại.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <AuthLayout title="Tao tai khoan" subtitle="Bat dau hanh trinh su nghiep voi AI">
+    <AuthLayout title="Tạo tài khoản" subtitle="Bắt đầu hành trình sự nghiệp với AI">
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div className="space-y-2">
-          <label className="ml-1 text-[14px] font-medium text-apple-dark">Ho va ten</label>
+          <label className="ml-1 text-[14px] font-medium text-apple-dark">Họ và tên</label>
           <input
             type="text"
-            placeholder="Nguyen Van A"
+            placeholder="Nguyễn Văn A"
             className="apple-input"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
@@ -54,10 +54,10 @@ const RegisterPage: React.FC = () => {
         </div>
 
         <div className="space-y-2">
-          <label className="ml-1 text-[14px] font-medium text-apple-dark">Mat khau</label>
+          <label className="ml-1 text-[14px] font-medium text-apple-dark">Mật khẩu</label>
           <input
             type="password"
-            placeholder="It nhat 8 ky tu"
+            placeholder="Ít nhất 8 ký tự"
             className="apple-input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -68,18 +68,18 @@ const RegisterPage: React.FC = () => {
         <div className="pt-2">
           {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
           <p className="mb-4 px-2 text-center text-[12px] text-apple-silver">
-            Bang cach dang ky, ban dong y voi Dieu khoan dich vu va Chinh sach bao mat cua chung toi.
+            Bằng cách đăng ký, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi.
           </p>
           <button type="submit" className="apple-button" disabled={isSubmitting}>
-            {isSubmitting ? 'Dang tao tai khoan...' : 'Tao tai khoan'}
+            {isSubmitting ? 'Đang tạo tài khoản...' : 'Tạo tài khoản'}
           </button>
         </div>
 
         <div className="mt-6 text-center">
           <p className="text-[15px] text-apple-silver">
-            Da co tai khoan?{' '}
+            Đã có tài khoản?{' '}
             <Link to="/login" className="apple-link font-medium">
-              Dang nhap
+              Đăng nhập
             </Link>
           </p>
         </div>

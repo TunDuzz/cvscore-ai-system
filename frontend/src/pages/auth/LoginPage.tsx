@@ -17,16 +17,16 @@ const LoginPage: React.FC = () => {
 
     try {
       await login({ email, password });
-      navigate('/dashboard', { replace: true });
+      navigate('/', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Dang nhap that bai.');
+      setError(err instanceof Error ? err.message : 'Đăng nhập thất bại.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <AuthLayout title="Dang nhap" subtitle="Su dung tai khoan CVScore cua ban">
+    <AuthLayout title="Đăng nhập" subtitle="Sử dụng tài khoản CVScore của bạn">
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-2">
           <label className="ml-1 text-[14px] font-medium text-apple-dark">Email</label>
@@ -42,8 +42,8 @@ const LoginPage: React.FC = () => {
 
         <div className="space-y-2">
           <div className="flex items-center justify-between px-1">
-            <label className="text-[14px] font-medium text-apple-dark">Mat khau</label>
-            <span className="apple-link text-[13px] opacity-70">Quen mat khau?</span>
+            <label className="text-[14px] font-medium text-apple-dark">Mật khẩu</label>
+            <span className="apple-link text-[13px] opacity-70">Quên mật khẩu?</span>
           </div>
           <input
             type="password"
@@ -58,14 +58,14 @@ const LoginPage: React.FC = () => {
         {error && <p className="text-sm text-red-500">{error}</p>}
 
         <button type="submit" className="apple-button mt-4" disabled={isSubmitting}>
-          {isSubmitting ? 'Dang dang nhap...' : 'Tiep tuc'}
+          {isSubmitting ? 'Đang đăng nhập...' : 'Tiếp tục'}
         </button>
 
         <div className="mt-6 text-center">
           <p className="text-[15px] text-apple-silver">
-            Chua co tai khoan?{' '}
+            Chưa có tài khoản?{' '}
             <Link to="/register" className="apple-link font-medium">
-              Dang ky ngay
+              Đăng ký ngay
             </Link>
           </p>
         </div>
