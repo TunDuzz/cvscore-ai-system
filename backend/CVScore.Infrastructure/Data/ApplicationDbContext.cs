@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using CVScore.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace CVScore.Infrastructure.Data;
 
@@ -10,16 +10,105 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<CvDocument> CvDocuments { get; set; }
+    public DbSet<InterviewProfile> InterviewProfiles { get; set; }
+    public DbSet<InterviewSession> InterviewSessions { get; set; }
+    public DbSet<InterviewQuestion> InterviewQuestions { get; set; }
+    public DbSet<InterviewAnswer> InterviewAnswers { get; set; }
+    public DbSet<Feedback> Feedbacks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
-        // Cấu hình Fluent API nếu cần
-        modelBuilder.Entity<User>(entity => {
+
+        modelBuilder.Entity<User>(entity =>
+        {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Email).IsRequired();
+            entity.Property(e => e.FullName).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.Email).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.PasswordHash).IsRequired();
             entity.HasIndex(e => e.Email).IsUnique();
+        });
+
+        modelBuilder.Entity<CvDocument>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).HasMaxLength(200).IsRequired();
+            entity.Property(e => e.FileName).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.FileUrl).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.FileType).HasMaxLength(50).IsRequired();
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.CvDocuments)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<InterviewProfile>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TargetRole).HasMaxLength(150).IsRequired();
+            entity.Property(e => e.CompanyName).HasMaxLength(150);
+            entity.Property(e => e.Language).HasConversion<int>();
+            entity.Property(e => e.TargetLevel).HasConversion<int>();
+
+            entity.HasOne(e => e.User)
+                .WithMany(u => u.InterviewProfiles)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.CvDocument)
+                .WithMany(c => c.InterviewProfiles)
+                .HasForeignKey(e => e.CvDocumentId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<InterviewSession>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Status).HasConversion<int>();
+            entity.Property(e => e.OverallScore).HasPrecision(5, 2);
+
+            entity.HasOne(e => e.InterviewProfile)
+                .WithMany(p => p.InterviewSessions)
+                .HasForeignKey(e => e.InterviewProfileId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<InterviewQuestion>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Category).HasConversion<int>();
+            entity.Property(e => e.Difficulty).HasConversion<int>();
+            entity.Property(e => e.Content).IsRequired();
+            entity.HasIndex(e => new { e.InterviewSessionId, e.DisplayOrder }).IsUnique();
+
+            entity.HasOne(e => e.InterviewSession)
+                .WithMany(s => s.Questions)
+                .HasForeignKey(e => e.InterviewSessionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<InterviewAnswer>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Content).IsRequired();
+
+            entity.HasOne(e => e.InterviewQuestion)
+                .WithMany(q => q.Answers)
+                .HasForeignKey(e => e.InterviewQuestionId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<Feedback>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Score).HasPrecision(5, 2);
+
+            entity.HasOne(e => e.InterviewAnswer)
+                .WithOne(a => a.Feedback)
+                .HasForeignKey<Feedback>(e => e.InterviewAnswerId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
