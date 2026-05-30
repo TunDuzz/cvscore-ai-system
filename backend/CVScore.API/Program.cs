@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using CVScore.Infrastructure.Extensions;
 using CVScore.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 
