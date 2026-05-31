@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using CVScore.Infrastructure.Extensions;
 using CVScore.Infrastructure.Data;
-using CVScore.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +13,7 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-
-// Configure MediatR
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CVScore.Application.AssemblyReference).Assembly));
+builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 
