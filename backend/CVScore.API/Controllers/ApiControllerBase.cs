@@ -17,6 +17,8 @@ public abstract class ApiControllerBase : ControllerBase
         {
             "not_found" => NotFound(result.ErrorMessage),
             "invalid_state" => Conflict(result.ErrorMessage),
+            "conflict" => Conflict(result.ErrorMessage),
+            "unauthorized" => Unauthorized(result.ErrorMessage),
             _ => BadRequest(result.ErrorMessage)
         };
     }
@@ -32,6 +34,8 @@ public abstract class ApiControllerBase : ControllerBase
         {
             "not_found" => NotFound(result.ErrorMessage),
             "invalid_state" => Conflict(result.ErrorMessage),
+            "conflict" => Conflict(result.ErrorMessage),
+            "unauthorized" => Unauthorized(result.ErrorMessage),
             _ => BadRequest(result.ErrorMessage)
         };
     }
